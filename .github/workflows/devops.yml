@@ -18,3 +18,31 @@ jobs:
         uses: paulhatch/semantic-version@v5.4.0
         with:
           bump_each_commit: true
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker image
+        run: |
+          LOWER_REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          LOWER_REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+                
+          docker build \
+            -t ghcr.io/$LOWER_REPO_NAME:staging \
+            -t ghcr.io/$LOWER_REPO_NAME:${{ steps.semver-app.outputs.version }} \
+            -f DevOpsWebApplication/Dockerfile \
+            .
+          docker push ghcr.io/$LOWER_REPO_NAME --all-tags
+
+      - name: Create release notes
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.semver-app.outputs.version }}
+          generateReleaseNotes: true
+          body: |
+            This release includes the following container image:
+            http://ghcr.io/${{ github.repository }}:${{ steps.semver-app.outputs.version }}
