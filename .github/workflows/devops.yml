@@ -27,6 +27,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push Docker image
+        if: always()
         run: |
           docker build \
             -t ghcr.io/${{ github.repository }}:staging \
@@ -45,5 +46,5 @@ jobs:
             http://ghcr.io/${{ github.repository }}:${{ steps.semver-app.outputs.version }}
 
       - name: Log generated version
-        run:
+        run: |
           echo "Generated version: ${{ steps.semver-app.outputs.version }}"
