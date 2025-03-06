@@ -44,7 +44,7 @@ jobs:
             This release includes the following container image:
             http://ghcr.io/${{ github.repository }}:${{ steps.semver-app.outputs.version }}
 
-      - name: Log generated version #test
+      - name: Log generated version 
         if: always()
         run: |
           echo "Generated version: ${{ steps.semver-app.outputs.version }}"
