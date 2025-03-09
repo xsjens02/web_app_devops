@@ -1,0 +1,5 @@
+services:
+  web:
+    image: ghcr.io/xsjens02/web_app_devops:staging
+    ports:
+      - "8000:8080"

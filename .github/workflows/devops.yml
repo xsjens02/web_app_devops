@@ -50,3 +50,23 @@ jobs:
         if: always()
         run: |
           echo "Generated version: ${{ steps.semver-app.outputs.version }}"
+      
+      - name: Deliver Docker Compose file to staging
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.STAGING_SERVER_IP }}
+          username: ${{ vars.STAGING_SERVER_USERNAME }}
+          key: ${{ secrets.STAGING_SERVER_SSH_KEY }}
+          source: "docker-compose.yaml"
+          target: dowa/
+      
+      - name: Run Docker Compose on staging server
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ vars.STAGING_SERVER_IP }}
+          username: ${{ vars.STAGING_SERVER_USERNAME }}
+          key: ${{ secrets.STAGING_SERVER_SSH_KEY }}
+          script: |
+            cd dowa
+            docker compose pull
+            docker compose up -d
