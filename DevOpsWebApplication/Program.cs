@@ -22,4 +22,5 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
+//Run
 app.Run();
